@@ -53,7 +53,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "Check your content in the <https://dcloidc.dev.looker.com/content_validator|Content Validator>."
+                      "text": "Check your content in the <https://demoexpo.looker.com/content_validator|Content Validator>."
                     }
                   }
                   ]
