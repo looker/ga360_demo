@@ -1,0 +1,91 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: spectacles
+
+on:
+  pull_request:
+    branches: [ master ]
+  push: ## there are no pull requests for auto-generated LookML
+    paths: 
+      - 'custom_events.view.lkml'
+
+jobs:
+  spectacles_sql:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        #get a specific feature added for this demo otherwise pip install spectacles would do!
+        git clone -b feature/ignore-hidden https://github.com/ernestoongaro/spectacles.git
+        cd spectacles
+        python setup.py install
+    - name: SQL Tests
+      run: |
+        echo "Testing SQL for pull request from ${{ github.head_ref }}" 
+        spectacles sql \
+          --base-url https://dcloidc.dev.looker.com/ \
+          --client-id ${{ secrets.my_client_id }} \
+          --client-secret ${{ secrets.my_client_secret }} \
+          --project ga_360 \
+          --branch `if [ -z "${{ github.head_ref }}" ]; then echo master; else echo ${{ github.head_ref }}; fi` \
+          --remote-reset 
+    - name: slack_notify_success
+      if: success()
+      uses: 8398a7/action-slack@v2
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} 
+      with:
+        status: custom
+        payload: |
+          {
+              "blocks": [
+               {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "👓 Spectacles tests ran successfully for ${{ github.head_ref }} 🎉"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "See the <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|action log> for details"
+                    }
+                  }
+                  ]
+            }
+    - name: slack_notify_failure
+      if: failure()
+      uses: 8398a7/action-slack@v2
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} 
+      with:
+        status: custom
+        payload: |
+          {
+              "blocks": [
+               {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "👓 Spectacles tests failed for ${{ github.head_ref }} 🛑"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "See the <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|action log> for details"
+                    }
+                  }
+                  ]
+            }
+   
