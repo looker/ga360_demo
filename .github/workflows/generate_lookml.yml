@@ -31,11 +31,11 @@ jobs:
       run: |
         echo "Generating New LookML" 
         python .github/workflows/generate_lookml.py \
-          --base-url https://dcloidc.dev.looker.com \
+          --base-url https://demoexpo.looker.com \
           --client-id ${{ secrets.my_client_id }} \
           --client-secret ${{ secrets.my_client_secret }} \
           --github-token ${{ secrets.GITHUB_TOKEN }} \
-          --repo saraleon1/ga360 \
+          --repo looker/ga360_demo \
           --project ga_360 > generate.txt
         echo "::set-env name=GENERATE_STATS::$(cat generate.txt)" 
     - name: slack_notify
