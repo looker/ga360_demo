@@ -30,7 +30,7 @@ jobs:
       run: |
         echo "Testing SQL for pull request from ${{ github.head_ref }}" 
         spectacles sql \
-          --base-url https://dcloidc.dev.looker.com/ \
+          --base-url https://demoexpo.looker.com/ \
           --client-id ${{ secrets.my_client_id }} \
           --client-secret ${{ secrets.my_client_secret }} \
           --project ga_360 \
