@@ -1,5 +1,4 @@
 explore: ga_sessions_base {
-  persist_for: "1 hour"
   extension: required
 
   view_name: ga_sessions
