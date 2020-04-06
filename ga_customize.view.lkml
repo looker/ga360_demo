@@ -1,6 +1,6 @@
 include: "ga_block.view.lkml"
 include: "custom_events.view"
-#
+# test comment
 explore: ga_sessions_block {
   extends: [ga_sessions_base]
   extension: required
