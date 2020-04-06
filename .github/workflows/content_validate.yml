@@ -26,7 +26,7 @@ jobs:
       run: |
         echo "Checking for Broken content" 
         python .github/workflows/content_validation.py \
-          --base-url https://dcloidc.dev.looker.com \
+          --base-url https://demoexpo.looker.com \
           --client-id ${{ secrets.my_client_id }} \
           --client-secret ${{ secrets.my_client_secret }}
         echo "::set-env name=LOOKS::$(cat looks.txt)" 
