@@ -1,6 +1,6 @@
 explore: ga_sessions_base {
   extension: required
-
+#  my comment
   view_name: ga_sessions
   view_label: "Session"
 
