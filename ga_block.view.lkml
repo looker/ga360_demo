@@ -118,7 +118,7 @@ explore: ga_sessions_base {
 view: ga_sessions_base {
   extension: required
 
-  dimension: SocialEngagementTyp {label: "Social Engagement Type"}
+  dimension: SocialEngagementType {label: "Social Engagement Type"}
 
   dimension_group: partition {
     label: "Visit Start"
