@@ -124,6 +124,7 @@ view: ga_sessions_base {
     type: time
     sql: TIMESTAMP_ADD(TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'^\d\d\d\d\d\d\d\d'))), INTERVAL (date_diff(current_date(), cast('2017-08-01' as date), day)) DAY )  ;;
   }
+  dimension: socialengagementtyp {label: "Social Engagement Type"}
 
   dimension_group: visitStart {
     label: "Visit Start"
@@ -248,6 +249,8 @@ view: ga_sessions_base {
   dimension: hits_eventInfo {hidden:yes}
 
 }
+
+
 
 
 view: geoNetwork_base {
