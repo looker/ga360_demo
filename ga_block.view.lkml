@@ -677,11 +677,13 @@ view: hits_product_base {
   }
 
   dimension: custom_dimensions {
+    hidden: yes
     type: string
     sql: ${TABLE}.customDimensions ;;
   }
 
   dimension: custom_metrics {
+    hidden: yes
     type: string
     sql: ${TABLE}.customMetrics ;;
   }
