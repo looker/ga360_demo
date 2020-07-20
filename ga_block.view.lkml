@@ -58,6 +58,13 @@ explore: ga_sessions_base {
     relationship: one_to_one
   }
 
+  join: hits_product {
+    view_label: "Session: Hits: Product"
+    sql: LEFT JOIN UNNEST(${hits.product}) as hits_product ;;
+    relationship: one_to_one
+  }
+
+
   join: hits_publisher {
     view_label: "Session: Hits: Publisher"
     sql: LEFT JOIN UNNEST([${hits.publisher}]) as hits_publisher ;;
@@ -516,7 +523,7 @@ view: hits_base {
   dimension: eventInfo {hidden:yes}
   dimension: exceptionInfo {hidden: yes}
   dimension: experiment {hidden: yes}
-
+  dimension: product { hidden: yes}
 
   set: detail {
     fields: [ga_sessions.id, ga_sessions.visitnumber, ga_sessions.session_count, hits_page.pagePath, hits.pageTitle]
@@ -594,6 +601,106 @@ view: hits_item_base {
     sql: ${productSku} ;;
     drill_fields: [productName, productCategory, productSku, total_item_revenue]
   }
+}
+
+view: hits_product_base {
+  extension: required
+
+  dimension: product_sku {
+    type: string
+    sql: ${TABLE}.productSKU ;;
+  }
+
+  dimension: v2_product_name {
+    type: string
+    sql: ${TABLE}.v2ProductName ;;
+  }
+
+  dimension: v2_product_category {
+    type: string
+    sql: ${TABLE}.v2ProductCategory ;;
+  }
+
+  dimension: product_variant {
+    type: string
+    sql: ${TABLE}.productVariant ;;
+  }
+
+  dimension: product_brand {
+    type: string
+    sql: ${TABLE}.productBrand ;;
+  }
+
+  dimension: product_revenue {
+    type: number
+    sql: ${TABLE}.productRevenue ;;
+  }
+
+  dimension: local_product_revenue {
+    type: number
+    sql: ${TABLE}.localProductRevenue ;;
+  }
+
+  dimension: product_price {
+    type: number
+    sql: ${TABLE}.productPrice ;;
+  }
+
+  dimension: local_product_price {
+    type: number
+    sql: ${TABLE}.localProductPrice ;;
+  }
+
+  dimension: product_quantity {
+    type: number
+    sql: ${TABLE}.productQuantity ;;
+  }
+
+  dimension: product_refund_amount {
+    type: number
+    sql: ${TABLE}.productRefundAmount ;;
+  }
+
+  dimension: local_product_refund_amount {
+    type: number
+    sql: ${TABLE}.localProductRefundAmount ;;
+  }
+
+  dimension: is_impression {
+    type: string
+    sql: ${TABLE}.isImpression ;;
+  }
+
+  dimension: is_click {
+    type: string
+    sql: ${TABLE}.isClick ;;
+  }
+
+  dimension: custom_dimensions {
+    type: string
+    sql: ${TABLE}.customDimensions ;;
+  }
+
+  dimension: custom_metrics {
+    type: string
+    sql: ${TABLE}.customMetrics ;;
+  }
+
+  dimension: product_list_name {
+    type: string
+    sql: ${TABLE}.productListName ;;
+  }
+
+  dimension: product_list_position {
+    type: number
+    sql: ${TABLE}.productListPosition ;;
+  }
+
+  dimension: product_coupon_code {
+    type: string
+    sql: ${TABLE}.productCouponCode ;;
+  }
+
 }
 
 view: hits_social_base {
