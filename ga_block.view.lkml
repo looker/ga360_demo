@@ -245,6 +245,14 @@ view: ga_sessions_base {
 
   dimension: channelGrouping {label: "Channel Grouping"}
 
+  dimension: meta_grouping {
+    description: "Takes channel grouping and puts into 3 groups"
+    type: string
+    sql: CASE WHEN ${channelGrouping} IN ('Organic Search', 'Direct') THEN 'Organic'
+              WHEN ${channelGrouping} IN ('Paid Search','Affiliates' ) THEN 'Paid'
+              ELSE 'Other'  ;;
+  }
+
   # subrecords
   dimension: geoNetwork {hidden: yes}
   dimension: totals {hidden:yes}
