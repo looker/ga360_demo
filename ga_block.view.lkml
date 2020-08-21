@@ -168,7 +168,7 @@ view: ga_sessions_base {
   dimension: visitId {label: "Visit ID"}
   dimension: fullVisitorId {label: "Full Visitor ID"}
 
-  dimension: socialengmenttype {label: "Social Engagement Type"}
+  dimension: socialengagementtype {label: "Social Engagement Type"}
 
   dimension: visitStartSeconds {
     label: "Visit Start Seconds"
