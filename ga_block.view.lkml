@@ -165,6 +165,8 @@ view: ga_sessions_base {
     style: integer
     sql: ${visitnumber} ;;
   }
+
+  dimension: socialEngagementTpe {label:"Social Type"}
   dimension: visitId {label: "Visit ID"}
   dimension: fullVisitorId {label: "Full Visitor ID"}
 
@@ -186,7 +188,6 @@ view: ga_sessions_base {
   dimension: date {
     hidden: yes
   }
-  dimension: socialEngagementType {label: "Social Engagement Type"}
   dimension: userid {label: "User ID"}
 
   measure: session_count {
