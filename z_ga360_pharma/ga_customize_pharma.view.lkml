@@ -1,5 +1,5 @@
-include: "ga_block.view.lkml"
-include: "custom_events.view"
+include: "ga_block_pharma.view.lkml"
+include: "custom_events_pharma.view"
 #
 explore: ga_sessions_block {
   extends: [ga_sessions_base]
@@ -10,7 +10,7 @@ explore: ga_sessions_block {
       field: ga_sessions.partition_date
       value: "7 days ago for 7 days"
       ## Partition Date should always be set to a recent date to avoid runaway queries
-   }
+    }
   }
 }
 
@@ -22,7 +22,6 @@ view: ga_sessions {
 
   # SCENARIO 1: Only one property
   sql_table_name: `bigquery-public-data.google_analytics_sample.ga_sessions_*` ;;
-
 
 
   # SCENARIO 2: Multiple properties. The property will dynamically look at the selected dataset using a filter.
@@ -53,19 +52,31 @@ view: ga_sessions {
   #       ;;
   #  }
 
-
-
-
+  dimension: property {
+    description: "@{property1}, @{property2}, @{property3}, @{property4}, @{property5}, @{property6}"
+    type: string
+    sql:
+      CASE
+        when extract(second from TIMESTAMP_SECONDS(visitStarttime)) < 6 then "@{property1}"
+        when extract(second from TIMESTAMP_SECONDS(visitStarttime)) >= 6 AND extract(second from TIMESTAMP_SECONDS(visitStarttime)) < 13 then "@{property2}"
+        when extract(second from TIMESTAMP_SECONDS(visitStarttime)) >= 13 AND extract(second from TIMESTAMP_SECONDS(visitStarttime)) < 22 then "@{property3}"
+        when extract(second from TIMESTAMP_SECONDS(visitStarttime)) >= 22 AND extract(second from TIMESTAMP_SECONDS(visitStarttime)) < 31 then "@{property4}"
+        when extract(second from TIMESTAMP_SECONDS(visitStarttime)) >= 31 AND extract(second from TIMESTAMP_SECONDS(visitStarttime)) < 44 then "@{property5}"
+        when extract(second from TIMESTAMP_SECONDS(visitStarttime)) >= 44 then "@{property6}"
+      END  ;;
+  }
 
   # If you have custom dimensions on sessions, declare them here.
 
+  dimension: custom_dimension_4 {
+    description: "APAC, Central America, EMEA, North America, South America"
+    label: "Region"
+    sql: (SELECT value FROM UNNEST(${TABLE}.customdimensions) WHERE index = 4) ;;
+  }
+
+
   # dimension: custom_dimension_2 {
   #   sql: (SELECT value FROM UNNEST(${TABLE.customdimensions}) WHERE index=2) ;;
-  # }
-
-
-  # dimension: custom_dimension_2 {
-  #   sql: (SELECT value FROM UNNEST(${hits_customDimensions}) WHERE index=2) ;;
   # }
 
   # dimension: custom_dimension_3 {
@@ -138,9 +149,6 @@ view: hits_social {
   dimension: socialInteractionNetworkAction {hidden: yes}
 }
 
-view: hits_product {
-  extends: [hits_product_base]
-}
 
 view: hits_appInfo {
   extends: [hits_appInfo_base]

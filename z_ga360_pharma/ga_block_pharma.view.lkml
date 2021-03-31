@@ -1,6 +1,7 @@
 explore: ga_sessions_base {
+  persist_for: "1 hour"
   extension: required
-#
+
   view_name: ga_sessions
   view_label: "Session"
 
@@ -58,13 +59,6 @@ explore: ga_sessions_base {
     relationship: one_to_one
   }
 
-  join: hits_product {
-    view_label: "Session: Hits: Product"
-    sql: LEFT JOIN UNNEST(${hits.product}) as hits_product ;;
-    relationship: one_to_one
-  }
-
-
   join: hits_publisher {
     view_label: "Session: Hits: Publisher"
     sql: LEFT JOIN UNNEST([${hits.publisher}]) as hits_publisher ;;
@@ -120,10 +114,6 @@ explore: ga_sessions_base {
     sql: LEFT JOIN UNNEST([${first_hit.page}]) as first_page ;;
     relationship: one_to_one
   }
-  join: time_on_page {
-    relationship: one_to_one
-    sql_on: ${hits.id} = ${time_on_page.hit_id} ;;
-  }
 }
 
 view: ga_sessions_base {
@@ -131,7 +121,7 @@ view: ga_sessions_base {
 
   dimension_group: partition {
     label: "Visit Start"
-    timeframes: [date,day_of_week,fiscal_quarter,week,month,year,month_name,month_num,week_of_year]
+    timeframes: [raw,date,day_of_week,fiscal_quarter,week,month,year,month_name,month_num,week_of_year]
     type: time
     sql: TIMESTAMP_ADD(TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'^\d\d\d\d\d\d\d\d'))), INTERVAL (date_diff(current_date(), cast('2017-08-01' as date), day)) DAY )  ;;
   }
@@ -142,7 +132,7 @@ view: ga_sessions_base {
     datatype: epoch
     sql: ${TABLE}.visitStarttime ;;
     timeframes: [raw,time]
-    hidden: no
+    hidden: yes
   }
 
   dimension: id {
@@ -172,25 +162,28 @@ view: ga_sessions_base {
   dimension: visitId {label: "Visit ID"}
   dimension: fullVisitorId {label: "Full Visitor ID"}
 
-  dimension: visitStartSeconds {
-    label: "Visit Start Seconds"
-    type: date_time
-    sql: TIMESTAMP_SECONDS(${TABLE}.visitStarttime) ;;
-    hidden: yes
-  }
+  # dimension: visitStartSeconds {
+  #   label: "Visit Start Seconds"
+  #   type: date_time
+  #   sql: TIMESTAMP_SECONDS(${TABLE}.visitStarttime) ;;
+  #   hidden: yes
+  # }
 
-  ## referencing partition_date for demo purposes only. Switch this dimension to reference visistStartSeconds
-  dimension_group: visitStart {
-    timeframes: [date,day_of_week,fiscal_quarter,week,month,year,month_name,month_num,week_of_year, hour12]
-    label: "Visit Start"
-    type: time
-    sql: (TIMESTAMP(${visitStartSeconds})) ;;
-  }
+  # ## referencing partition_date for demo purposes only. Switch this dimension to reference visistStartSeconds
+  # dimension_group: visitStart {
+  #   timeframes: [date,day_of_week,fiscal_quarter,week,month,year,month_name,month_num,week_of_year, hour12]
+  #   label: "Visit Start"
+  #   type: time
+  #   sql: (TIMESTAMP(${visitStartSeconds})) ;;
+  # }
   ## use visit or hit start time instead
   dimension: date {
     hidden: yes
   }
-  dimension: socialEngagementType {label: "Social Engagement Type"}
+  dimension: socialEngagementType {
+    description: "Not Socially Engaged"
+    label: "Social Engagement Type"
+  }
   dimension: userid {label: "User ID"}
 
   measure: session_count {
@@ -247,7 +240,10 @@ view: ga_sessions_base {
     }
   }
 
-  dimension: channelGrouping {label: "Channel Grouping"}
+  dimension: channelGrouping {
+    label: "Channel Grouping"
+    description: "Affiliate, Direct, Display, Organic Search, Paid Search, Referral, Social"
+  }
 
   # subrecords
   dimension: geoNetwork {hidden: yes}
@@ -483,39 +479,28 @@ view: device_base {
 view: hits_base {
   extension: required
   dimension: id {
-    group_label: "Z"
     primary_key: yes
     sql: CONCAT(${ga_sessions.id},'|',FORMAT('%05d',${hitNumber})) ;;
   }
-  dimension: hitNumber {
-    group_label: "Description"
-    type: number
-  }
-  dimension: time {
-    group_label: "Time"
-  }
+  dimension: hitNumber {}
+  dimension: time {}
   dimension_group: hit {
-    timeframes: [time,date,day_of_week,fiscal_quarter,week,month,year,month_name,month_num,week_of_year]
+    timeframes: [date,day_of_week,fiscal_quarter,week,month,year,month_name,month_num,week_of_year]
     type: time
-    sql: TIMESTAMP_MILLIS(1000 * ${ga_sessions.visitStart_raw} + ${TABLE}.time)  ;;
+    sql: TIMESTAMP_MILLIS(1000 * ${ga_sessions.partition_raw} + ${TABLE}.time)  ;;
   }
-  dimension: hour {group_label: "Time"}
-  dimension: minute {group_label: "Time"}
+  dimension: hour {}
+  dimension: minute {}
   dimension: isSecure {
-    group_label: "Description"
     label: "Is Secure"
     type: yesno
   }
   dimension: isInteraction {
-    group_label: "Description"
     label: "Is Interaction"
     type: yesno
     description: "If this hit was an interaction, this is set to true. If this was a non-interaction hit (i.e., an event with interaction set to false), this is false."
   }
-  dimension: referer {
-    group_label: "Description"
-    description: "Who referred user to the site (facebook.com, google.com)"
-  }
+  dimension: referer {}
 
   measure: count {
     type: count
@@ -538,7 +523,7 @@ view: hits_base {
   dimension: eventInfo {hidden:yes}
   dimension: exceptionInfo {hidden: yes}
   dimension: experiment {hidden: yes}
-  dimension: product { hidden: yes}
+
 
   set: detail {
     fields: [ga_sessions.id, ga_sessions.visitnumber, ga_sessions.session_count, hits_page.pagePath, hits.pageTitle]
@@ -590,7 +575,7 @@ view: hits_item_base {
   dimension: transactionId {label: "Transaction ID"}
   dimension: productName {
     label: "Product Name"
-    }
+  }
 
   dimension: productCategory {label: "Product Catetory"}
   dimension: productSku {label: "Product Sku"}
@@ -599,125 +584,23 @@ view: hits_item_base {
     description: "Should only be used as a dimension"
     label: "Item Quantity"
     hidden: yes
-    }
+  }
   dimension: itemRevenue {
     description: "Should only be used as a dimension"
     label: "Item Revenue"
     hidden: yes
-    }
+  }
   dimension: currencyCode {label: "Currency Code"}
   dimension: localItemRevenue {
     label:"Local Item Revenue"
     description: "Should only be used as a dimension"
-    }
+  }
 
   measure: product_count {
     type: count_distinct
     sql: ${productSku} ;;
     drill_fields: [productName, productCategory, productSku, total_item_revenue]
   }
-}
-
-view: hits_product_base {
-  extension: required
-
-  dimension: product_sku {
-    type: string
-    sql: ${TABLE}.productSKU ;;
-  }
-
-  dimension: v2_product_name {
-    type: string
-    sql: ${TABLE}.v2ProductName ;;
-  }
-
-  dimension: v2_product_category {
-    type: string
-    sql: ${TABLE}.v2ProductCategory ;;
-  }
-
-  dimension: product_variant {
-    type: string
-    sql: ${TABLE}.productVariant ;;
-  }
-
-  dimension: product_brand {
-    type: string
-    sql: ${TABLE}.productBrand ;;
-  }
-
-  dimension: product_revenue {
-    type: number
-    sql: ${TABLE}.productRevenue ;;
-  }
-
-  dimension: local_product_revenue {
-    type: number
-    sql: ${TABLE}.localProductRevenue ;;
-  }
-
-  dimension: product_price {
-    type: number
-    sql: ${TABLE}.productPrice ;;
-  }
-
-  dimension: local_product_price {
-    type: number
-    sql: ${TABLE}.localProductPrice ;;
-  }
-
-  dimension: product_quantity {
-    type: number
-    sql: ${TABLE}.productQuantity ;;
-  }
-
-  dimension: product_refund_amount {
-    type: number
-    sql: ${TABLE}.productRefundAmount ;;
-  }
-
-  dimension: local_product_refund_amount {
-    type: number
-    sql: ${TABLE}.localProductRefundAmount ;;
-  }
-
-  dimension: is_impression {
-    type: string
-    sql: ${TABLE}.isImpression ;;
-  }
-
-  dimension: is_click {
-    type: string
-    sql: ${TABLE}.isClick ;;
-  }
-
-  dimension: custom_dimensions {
-    hidden: yes
-    type: string
-    sql: ${TABLE}.customDimensions ;;
-  }
-
-  dimension: custom_metrics {
-    hidden: yes
-    type: string
-    sql: ${TABLE}.customMetrics ;;
-  }
-
-  dimension: product_list_name {
-    type: string
-    sql: ${TABLE}.productListName ;;
-  }
-
-  dimension: product_list_position {
-    type: number
-    sql: ${TABLE}.productListPosition ;;
-  }
-
-  dimension: product_coupon_code {
-    type: string
-    sql: ${TABLE}.productCouponCode ;;
-  }
-
 }
 
 view: hits_social_base {
@@ -850,43 +733,3 @@ view: hits_eventInfo_base {
 # #   extension: required
 #   dimension: sourcePropertyDisplayName {label: "Property Display Name"}
 # }
-
-view: time_on_page {
-  derived_table: {
-    explore_source: ga_sessions {
-      column: id {}
-      column: hitNumber { field: hits.hitNumber }
-      column: hit_time { field: hits.hit_time }
-      column: hit_id { field: hits.id }
-      derived_column: hit_time_next_event {
-        sql: LAST_VALUE(hit_time) OVER (PARTITION BY id ORDER BY hitNumber asc RANGE BETWEEN CURRENT ROW AND 1 FOLLOWING) ;;
-      }
-      filters: {
-        field: ga_sessions.partition_date
-        value: "7 days ago for 7 days"
-      }
-    }
-  }
-  dimension: id {
-  }
-  dimension: hit_id {
-    primary_key: yes
-  }
-  dimension: hitNumber {
-    type: number
-  }
-  dimension: hit_time {
-    type: date_time
-  }
-  dimension: hit_time_next_event {
-    type: date_time
-  }
-  dimension: time_on_page {
-    type: number
-    sql: DATETIME_DIFF(cast(${hit_time_next_event} as datetime), cast(${hit_time} as datetime), second) ;;
-  }
-  measure: total_time_on_page {
-    type: sum
-    sql: ${time_on_page} ;;
-  }
-}
