@@ -65,7 +65,7 @@ view: ga_sessions {
 
 
   # dimension: custom_dimension_2 {
-  #   sql: (SELECT value FROM UNNEST(${TABLE.customdimensions}) WHERE index=2) ;;
+  #   sql: (SELECT value FROM UNNEST(${hits_customDimensions}) WHERE index=2) ;;
   # }
 
   # dimension: custom_dimension_3 {
