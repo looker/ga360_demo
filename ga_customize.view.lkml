@@ -138,6 +138,9 @@ view: hits_social {
   dimension: socialInteractionNetworkAction {hidden: yes}
 }
 
+view: hits_product {
+  extends: [hits_product_base]
+}
 
 view: hits_appInfo {
   extends: [hits_appInfo_base]
