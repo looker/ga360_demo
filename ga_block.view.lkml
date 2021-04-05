@@ -186,7 +186,7 @@ view: ga_sessions_base {
   dimension: date {
     hidden: yes
   }
-  dimension: socialEngagementType {label: "Social Engagement Type"}
+  dimension: socialEngagementTpe {label: "Social Engagement Type"}
 
  dimension: userid {label: "User ID"}
 
