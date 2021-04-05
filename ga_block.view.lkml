@@ -187,7 +187,8 @@ view: ga_sessions_base {
     hidden: yes
   }
   dimension: socialEngagementType {label: "Social Engagement Type"}
-  dimension: userid {label: "User ID"}
+
+ dimension: userid {label: "User ID"}
 
   measure: session_count {
     type: count
