@@ -1,17 +1,17 @@
-test: channel_grouping_not_null {
-  #Make sure no null channel groupings come through
-  explore_source: ga_sessions {
-    column: channelGrouping {}
-    filters: {
-      field: ga_sessions.partition_date
-      value: "2019"
-    }
-  }
-  assert: historic_visit_total_is_accurate {
-    expression: NOT is_null(${ga_sessions.channelGrouping})
- ;;
-  }
-}
+# test: channel_grouping_not_null {
+#   #Make sure no null channel groupings come through
+#   explore_source: ga_sessions {
+#     column: channelGrouping {}
+#     filters: {
+#       field: ga_sessions.partition_date
+#       value: "2019"
+#     }
+#   }
+#   assert: historic_visit_total_is_accurate {
+#     expression: NOT is_null(${ga_sessions.channelGrouping})
+# ;;
+#   }
+# }
 
 test: hostname_check {
   # make sure another GA property isn't hooked up by accident
