@@ -24,7 +24,6 @@ view: ga_sessions {
   sql_table_name: `bigquery-public-data.google_analytics_sample.ga_sessions_*` ;;
 
 
-
   # SCENARIO 2: Multiple properties. The property will dynamically look at the selected dataset using a filter.
   # sql_table_name: {% assign prop = ga_sessions.website_selector._sql %}
   #                 {% if prop contains 'Website1' %} `project.dataset.ga_sessions_*`
