@@ -4,7 +4,7 @@ test: channel_grouping_not_null {
     column: channelGrouping {}
     filters: {
       field: ga_sessions.partition_date
-      value: "2019"
+      value: "2020"
     }
   }
   assert: historic_visit_total_is_accurate {
