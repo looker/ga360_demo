@@ -328,7 +328,7 @@ view: totals_base {
   measure: pageviews_total {
     label: "Page Views"
     type: sum
-    sql: ${TABLE}.pageviews ;;
+    sql: ${TABLE}.pageviewZ ;;
   }
   measure: timeonsite_total {
     label: "Time On Site"

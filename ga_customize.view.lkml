@@ -1,6 +1,5 @@
 include: "ga_block.view.lkml"
-include: "custom_events.view"
-#
+
 explore: ga_sessions_block {
   extends: [ga_sessions_base]
   extension: required
@@ -152,7 +151,7 @@ view: hits_eventInfo {
     primary_key: yes
     sql: ${hits.id} ;;
   }
-  extends: [hits_eventInfo_base,custom_events]
+  extends: [hits_eventInfo_base]
   dimension: play {
     sql: ${eventAction} = "play" ;;
     type: yesno
