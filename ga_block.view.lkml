@@ -125,8 +125,6 @@ explore: ga_sessions_base {
 view: ga_sessions_base {
   extension: required
 
-  dimension: SocialEngagmentType {label: "Social Engagement Type"}
-
   dimension_group: partition {
     label: "Visit Start"
     timeframes: [date,day_of_week,fiscal_quarter,week,month,year,month_name,month_num,week_of_year]
@@ -188,8 +186,11 @@ view: ga_sessions_base {
   dimension: date {
     hidden: yes
   }
-  dimension: socialEngagementType {label: "Social Engagement Type"}
   dimension: userid {label: "User ID"}
+
+  dimension: SocialEngagementTye
+    {
+      label: "Social Engagement Type"}
 
   measure: session_count {
     type: count
